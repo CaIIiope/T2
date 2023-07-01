@@ -1,1 +1,130 @@
+__trabalho de introdução a ciencias da computação__
+
+Minissistema bancário Secsafe
+
+
+tipo cliente[]
+struct
+senha[]
+numero do cadastro
+nome[]
+saldo
+data de nascimento
+
+Banco Secsafe
+[1]login
+[2]cadastrar
+
+
+[1]
+nome:
+for(int i = 0; i<=n; i++){
+indice = strcmp(nome,cliente[i].nome);
+if(indice == 0){
+k = i;
+continue;
+else if(i=n && indice != 0)
+printf("usuário não encontrado. tente novamente.");
+}
+}
+
+senha:
+if(senha == cliente[k].senha)
+printf("senha correta");
+else{
+printf("senha inválida.tente novamente");
+continue;
+}
+
+cliente n
+[1]ver saldo
+[2]adicionar saldo
+[3]fazer pagamento
+[4]sacar dinheiro
+[5]extrato bancario
+[6]sair da conta
+
+[2]
+CADASTRO DO USUÁRIO:
+insira seu nome:
+escolha uma senha:
+!a senha deve conter:
+-uma letra maiúscula
+-deve conter números
+if{senha válida}
+usuário cadastrado
+
+cria um numero de cadastro + adiciona no arquivo um cliente
+cliente registrado com sucesso 
+retoma a página de login
+
+[1]
+
+[1]saldo
+versaldo(){
+printf("seu saldo eh de:%f",cliente[k].saldo);
+
+[2]adicionar saldo
+addsaldo()
+printf("insira o valor que quer depositar:");
+scanf("%f",deposito");
+cliente[k].saldo = cliente[k].saldo + deposito;
+
+[3]fazer pagamento
+pagamento(){
+printf("a pessoa para quem quer fazer a transferência é do nosso banco?");
+if(sim)
+printf("insira o nome da pessoa para quem quer transferir");
+fgets(pessoa,50,stdin)
+for(int j = 0; j<n; j++){
+if(pessoa == cliente[j].nome)
+printf("pessoa encontrada");
+int a = j;
+}
+printf("insira o valor da transferência:");
+scanf("%f",transf);
+if(trasf<=cliente[k].saldo)
+transação possivel
+cliente[k].saldo = cliente[k].saldo - transf;
+else
+saldo insuficiente;
+cliente[a].saldo = cliente[k].saldo + transf;
+if(nao)
+printf("insira o valor da transferência:");
+scanf("%f",transf);
+if(trasf<=cliente[k].saldo)
+transação possivel
+cliente[k].saldo = cliente[k].saldo - transf;
+else
+saldo insuficiente;
+
+[4]sacar dinheiro
+saque(){
+printf("insira o valor que quer sacar:");
+scanf("%f",saque);
+if(saque<=cliente[k].saldo)
+saque possivel;
+cliente[k].saldo = cliente[k].saldo - saque;
+else
+saldo insuficiente;
+}
+
+[5]extrato bancário
+
+
+
+[6]sair da conta
+sair(){
+printf("você tem certeza que quer sair da sua conta?");
+if(sim)
+break;
+if(não)
+continue;
+}
+
+
+
+
+
+
 
