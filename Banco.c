@@ -23,8 +23,8 @@ double valor;
 void code (char* );
 void decode(char* );
 int login(tp_cliente*, int);
-void add_saldo(tp_cliente*, int, t_extrato**, int, struct tm*);
-void sacar(tp_cliente*, int, int, t_extrato**, struct tm*);
+void add_saldo(tp_cliente*, int, t_extrato**, struct tm*);
+void sacar(tp_cliente*, int, t_extrato**, struct tm*);
 void transferencia(tp_cliente*, int, int, t_extrato**, struct tm*);
 void grava_arquivo (tp_cliente*, int, t_extrato**);
 void le_arquivo(tp_cliente*, int, t_extrato**);
@@ -32,7 +32,8 @@ void le_numero(int*);
 void cadastro(tp_cliente*, int);
 void lista_cliente(tp_cliente*, int);
 void extrato (tp_cliente*, t_extrato **, int, struct tm*, double);
-void grava_ext (tp_cliente*, t_extrato**, int , int);
+void grava_ext (tp_cliente*, t_extrato**, int);
+void verif();
 
 //Funcao de espera que aguarda o usuario digitar algo e apos isso limpa a tela do console
 void pausa()  
@@ -41,7 +42,7 @@ void pausa()
   
     fflush(stdin);
     fgets(wait,3,stdin);
-    system("cls"); // Funcao apenas disponivel no Windows
+    system("clear"); // Funcao apenas disponivel no Windows
 }
 
 int main(void)  
@@ -56,8 +57,10 @@ info = localtime(&rawtime);
   int opc1, posi, sair=1, programa=1, nreg, opc2;      
   tp_cliente *cliente;       
   t_extrato **ext;
-  double quantidade = 0;
 
+  //Verifica se o arquivo existe, caso nao exista, cria o arquivo 
+  verif(); 
+  
   //busca no cabecalho do arquivo o numero de clientes registrados
   le_numero(&nreg);  
   cliente = (tp_cliente*) calloc (nreg, sizeof(tp_cliente));  
@@ -72,7 +75,7 @@ info = localtime(&rawtime);
       printf("[4]Fechar programa\n");
       scanf("%d",&opc1);
       getchar();
-      system("cls");
+      system("clear");
   
         if(opc1==1){
           posi = login(cliente, nreg);  //login retorna a posicao do cliente no vetor da struct
@@ -82,7 +85,7 @@ info = localtime(&rawtime);
             printf("[4]sacar dinheiro\n[5]extrato bancario\n[6]sair da conta\n");
             scanf("%d",&opc2);
             getchar();
-            system("cls");
+            system("clear");
             
         switch(opc2){
           case 1:
@@ -93,7 +96,7 @@ info = localtime(&rawtime);
           case 2:
             (cliente[posi].ntransac)++;
             ext[posi] = (t_extrato*) realloc (ext[posi], cliente[posi].ntransac * sizeof(t_extrato));
-            add_saldo(cliente, posi, ext, nreg, info);
+            add_saldo(cliente, posi, ext, info);
             grava_arquivo(cliente, nreg, ext);
             break;
           
@@ -107,12 +110,12 @@ info = localtime(&rawtime);
           case 4:
             (cliente[posi].ntransac)++;
             ext[posi] = (t_extrato*) realloc (ext[posi], cliente[posi].ntransac * sizeof(t_extrato));
-            sacar(cliente, posi, nreg, ext, info);
+            sacar(cliente, posi, ext, info);
             grava_arquivo(cliente, nreg, ext);
             break;
           
           case 5:
-            grava_ext (cliente, ext, nreg, posi);
+            grava_ext (cliente, ext, posi);
             break;
 
           case 6:
@@ -175,7 +178,7 @@ int login(tp_cliente*cliente,int n)   // n:a quantidade de clientes ja cadastrad
       printf("Insira sua senha:");
       fgets(senha,30,stdin);
       strtok(senha,"\n");
-      system("cls");
+      system("clear");
         if(!strcmp(senha,cliente[pos].senha)){  //se a posicao do cliente tiver a senha correspondente
           printf("Senha correta!\n");
           printf("Bem vindo(a), %s",cliente[pos].nome);
@@ -193,7 +196,7 @@ int login(tp_cliente*cliente,int n)   // n:a quantidade de clientes ja cadastrad
 }
 
 //Adiciona dinheiro no saldo do cliente 
-void add_saldo(tp_cliente* cliente, int posi, t_extrato **ext, int nreg, struct tm* info){
+void add_saldo(tp_cliente* cliente, int posi, t_extrato **ext, struct tm* info){
   double quantidade;
   
     printf("Dinheiro a ser adicionado: ");
@@ -205,9 +208,10 @@ void add_saldo(tp_cliente* cliente, int posi, t_extrato **ext, int nreg, struct 
     extrato (cliente, ext, posi, info, quantidade);
     pausa();
 }
-//Transfere dinheiro de um cliente para outro. O cliente logado indica o numero da conta que será transferido, após isso, ele deve indicar se o nome da pessoa que ele quer transferir o dinheiro está correto e selecionar quanto será transferido.
+/*Transfere dinheiro de um cliente para outro.
+O cliente logado indica o numero da conta,após isso, ele deve confirmar se o nome está correto e selecionar a quantia a ser transferida.*/
 void transferencia(tp_cliente* cliente, int nreg, int posi, t_extrato **ext, struct tm* info){
-  int user, volta=0;
+  int user;
   double quantidade;
   char resp;
   
@@ -262,7 +266,7 @@ void transferencia(tp_cliente* cliente, int nreg, int posi, t_extrato **ext, str
 }
 
 //Retira o dinheiro da conta logada
-void sacar(tp_cliente* cliente, int posi, int nreg, t_extrato **ext, struct tm* info){
+void sacar(tp_cliente* cliente, int posi, t_extrato **ext, struct tm* info){
   double quantidade;
   
     printf("Digite a quantidade a ser sacada: ");
@@ -429,7 +433,7 @@ void cadastro (tp_cliente* cliente, int nreg)
     cliente[nreg-1].num = nreg;
     cliente[nreg-1].saldo = 0;
     
-    system("cls");
+    system("clear");
     printf("Cadastro realizado com sucesso!!\n");
     printf("O numero da sua conta e %d \n",nreg);
     pausa();
@@ -457,15 +461,19 @@ void extrato (tp_cliente* cliente, t_extrato **ext, int ncliente, struct tm *dat
 }
 
 //Grava no arquivo txt que sera exibido ao cliente as transacoes feitas por ele com a data e o valor transferido
-void grava_ext (tp_cliente* cliente, t_extrato** ext, int nreg, int ncliente)
+void grava_ext (tp_cliente* cliente, t_extrato** ext, int ncliente)
 {
   FILE* arqout;
   arqout = fopen ("Extrato.txt", "wt");
 
   if (arqout == NULL)
   {
-    printf ("Falha na abertura do arquivo texto\n");
-    exit(1);
+    // Caso o arquivo não exista, cria 
+    arqout = fopen("Extrato.txt", "wt"); 
+    fclose(arqout);
+        
+    // Abre o arquivo novamente para escrita
+    arqout = fopen("Extrato.txt", "at");
   }
     
   for (int j = 0; j < cliente[ncliente].ntransac; j++)
@@ -475,4 +483,24 @@ void grava_ext (tp_cliente* cliente, t_extrato** ext, int nreg, int ncliente)
   }
     printf("Extrato impresso com sucesso!\n");
     fclose (arqout);
+}
+
+void verif ()
+{
+    // Verifica se o arquivo CAD existe
+    FILE *arqin = fopen(CAD, "rb");
+
+    if (arqin == NULL)
+     {
+        // Caso o arquivo não exista, cria-o e define o número de registros como zero
+        arqin = fopen(CAD, "wb");
+        int nreg = 0;
+        fwrite(&nreg, sizeof(int), 1, arqin);
+        fclose(arqin);
+    } 
+    else
+     {
+        // Caso o arquivo exista, fecha-o para prosseguir com as operações normais
+        fclose(arqin);
+    }
 }
